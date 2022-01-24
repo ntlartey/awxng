@@ -994,3 +994,6 @@ DEFAULT_CONTROL_PLANE_QUEUE_NAME = 'controlplane'
 # For example, to disable SELinux in containers for podman
 # DEFAULT_CONTAINER_RUN_OPTIONS = ['--security-opt', 'label=disable']
 DEFAULT_CONTAINER_RUN_OPTIONS = []
+
+# Mount exposed paths as hostPath resource in k8s/ocp
+AWX_MOUNT_ISOLATED_PATHS_ON_K8S = False
