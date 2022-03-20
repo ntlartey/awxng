@@ -1,0 +1,434 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.217.0.41"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.217.0.41"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    openshift.io/scc: restricted
+  creationTimestamp: "2022-03-19T17:52:59Z"
+  generateName: example-84dccf4ccc-
+  labels:
+    app.kubernetes.io/component: automationcontroller
+    app.kubernetes.io/managed-by: automationcontroller-operator
+    app.kubernetes.io/name: example
+    app.kubernetes.io/part-of: example
+    app.kubernetes.io/version: latest
+    pod-template-hash: 84dccf4ccc
+  name: example-84dccf4ccc-xltn4
+  namespace: ansible-automation-platform
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: example-84dccf4ccc
+    uid: 0af0f0e5-5c92-4c62-930e-938714556b77
+  resourceVersion: "79968"
+  uid: 6c258c08-99b1-48d6-9a17-1cd6034b7aa4
+spec:
+  containers:
+  - args:
+    - redis-server
+    - /etc/redis.conf
+    image: registry.redhat.io/rhel8/redis-5@sha256:b711e9f796376353db77a337befb39c31e844caaa2ab46985c9e5ad0b5e92996
+    imagePullPolicy: IfNotPresent
+    name: redis
+    resources: {}
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000670000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/redis.conf
+      name: example-redis-config
+      readOnly: true
+      subPath: redis.conf
+    - mountPath: /var/run/redis
+      name: example-redis-socket
+    - mountPath: /data
+      name: example-redis-data
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-6nx9f
+      readOnly: true
+  - env:
+    - name: MY_POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    image: registry.redhat.io/ansible-automation-platform-21/controller-rhel8@sha256:c9b2dc557f43c3cca0812445f37460ce7b27ec9303a6ef90fed856bcdf609a37
+    imagePullPolicy: IfNotPresent
+    name: example-web
+    ports:
+    - containerPort: 8052
+      protocol: TCP
+    resources:
+      requests:
+        cpu: "1"
+        memory: 2Gi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000670000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/tower/conf.d/execution_environments.py
+      name: example-application-credentials
+      readOnly: true
+      subPath: execution_environments.py
+    - mountPath: /etc/tower/conf.d/credentials.py
+      name: example-application-credentials
+      readOnly: true
+      subPath: credentials.py
+    - mountPath: /etc/tower/conf.d/ldap.py
+      name: example-application-credentials
+      readOnly: true
+      subPath: ldap.py
+    - mountPath: /etc/tower/SECRET_KEY
+      name: example-secret-key
+      readOnly: true
+      subPath: SECRET_KEY
+    - mountPath: /etc/tower/settings.py
+      name: example-settings
+      readOnly: true
+      subPath: settings.py
+    - mountPath: /etc/nginx/nginx.conf
+      name: example-nginx-conf
+      readOnly: true
+      subPath: nginx.conf
+    - mountPath: /var/run/redis
+      name: example-redis-socket
+    - mountPath: /var/run/supervisor
+      name: supervisor-socket
+    - mountPath: /var/run/awx-rsyslog
+      name: rsyslog-socket
+    - mountPath: /var/lib/awx/rsyslog
+      name: rsyslog-dir
+    - mountPath: /var/lib/awx/projects
+      name: example-projects
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-6nx9f
+      readOnly: true
+  - args:
+    - /usr/bin/launch_awx_task.sh
+    env:
+    - name: SUPERVISOR_WEB_CONFIG_PATH
+      value: /etc/supervisord.conf
+    - name: AWX_SKIP_MIGRATIONS
+      value: "1"
+    - name: MY_POD_UID
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.uid
+    - name: MY_POD_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.podIP
+    - name: MY_POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.namespace
+    image: registry.redhat.io/ansible-automation-platform-21/controller-rhel8@sha256:c9b2dc557f43c3cca0812445f37460ce7b27ec9303a6ef90fed856bcdf609a37
+    imagePullPolicy: IfNotPresent
+    name: example-task
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000670000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/tower/conf.d/execution_environments.py
+      name: example-application-credentials
+      readOnly: true
+      subPath: execution_environments.py
+    - mountPath: /etc/tower/conf.d/credentials.py
+      name: example-application-credentials
+      readOnly: true
+      subPath: credentials.py
+    - mountPath: /etc/tower/conf.d/ldap.py
+      name: example-application-credentials
+      readOnly: true
+      subPath: ldap.py
+    - mountPath: /etc/tower/SECRET_KEY
+      name: example-secret-key
+      readOnly: true
+      subPath: SECRET_KEY
+    - mountPath: /etc/tower/settings.py
+      name: example-settings
+      readOnly: true
+      subPath: settings.py
+    - mountPath: /var/run/redis
+      name: example-redis-socket
+    - mountPath: /var/run/supervisor
+      name: supervisor-socket
+    - mountPath: /var/run/awx-rsyslog
+      name: rsyslog-socket
+    - mountPath: /var/lib/awx/rsyslog
+      name: rsyslog-dir
+    - mountPath: /etc/receptor/receptor.conf
+      name: example-receptor-config
+      readOnly: true
+      subPath: receptor.conf
+    - mountPath: /var/run/receptor
+      name: receptor-socket
+    - mountPath: /var/lib/awx/projects
+      name: example-projects
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-6nx9f
+      readOnly: true
+  - args:
+    - receptor
+    - --config
+    - /etc/receptor/receptor.conf
+    image: registry.redhat.io/ansible-automation-platform-21/ee-supported-rhel8@sha256:76d5a0345c9b7e602b8e8f5d06fd95682c79c1b0e7fdf3850f695bdc0a14c547
+    imagePullPolicy: IfNotPresent
+    name: example-ee
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      runAsUser: 1000670000
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/receptor/receptor.conf
+      name: example-receptor-config
+      readOnly: true
+      subPath: receptor.conf
+    - mountPath: /var/run/receptor
+      name: receptor-socket
+    - mountPath: /var/lib/awx/projects
+      name: example-projects
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-6nx9f
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  imagePullSecrets:
+  - name: example-dockercfg-mx95g
+  nodeName: crc-8rwmc-master-0
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000670000
+    seLinuxOptions:
+      level: s0:c26,c10
+  serviceAccount: example
+  serviceAccountName: example
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  volumes:
+  - name: example-application-credentials
+    secret:
+      defaultMode: 420
+      items:
+      - key: credentials.py
+        path: credentials.py
+      - key: ldap.py
+        path: ldap.py
+      - key: execution_environments.py
+        path: execution_environments.py
+      secretName: example-app-credentials
+  - name: example-secret-key
+    secret:
+      defaultMode: 420
+      items:
+      - key: secret_key
+        path: SECRET_KEY
+      secretName: example-secret-key
+  - configMap:
+      defaultMode: 420
+      items:
+      - key: settings
+        path: settings.py
+      name: example-automationcontroller-configmap
+    name: example-settings
+  - configMap:
+      defaultMode: 420
+      items:
+      - key: nginx_conf
+        path: nginx.conf
+      name: example-automationcontroller-configmap
+    name: example-nginx-conf
+  - configMap:
+      defaultMode: 420
+      items:
+      - key: redis_conf
+        path: redis.conf
+      name: example-automationcontroller-configmap
+    name: example-redis-config
+  - emptyDir: {}
+    name: example-redis-socket
+  - emptyDir: {}
+    name: example-redis-data
+  - emptyDir: {}
+    name: supervisor-socket
+  - emptyDir: {}
+    name: rsyslog-socket
+  - emptyDir: {}
+    name: receptor-socket
+  - emptyDir: {}
+    name: rsyslog-dir
+  - configMap:
+      defaultMode: 420
+      items:
+      - key: receptor_conf
+        path: receptor.conf
+      name: example-automationcontroller-configmap
+    name: example-receptor-config
+  - emptyDir: {}
+    name: example-projects
+  - name: kube-api-access-6nx9f
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+      - configMap:
+          items:
+          - key: service-ca.crt
+            path: service-ca.crt
+          name: openshift-service-ca.crt
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2022-03-19T17:52:59Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2022-03-20T08:05:34Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2022-03-20T08:05:34Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2022-03-19T17:52:59Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: cri-o://38ce8b77b826dd4575210d00f6555a94624e83df0e1eb68e47ed5531804a87bb
+    image: registry.redhat.io/ansible-automation-platform-21/ee-supported-rhel8@sha256:76d5a0345c9b7e602b8e8f5d06fd95682c79c1b0e7fdf3850f695bdc0a14c547
+    imageID: registry.redhat.io/ansible-automation-platform-21/ee-supported-rhel8@sha256:381e3bd6047df20ba4a4131440d3d7cfa2e02c2157ff79c6f64a7a71c641ee8c
+    lastState: {}
+    name: example-ee
+    ready: true
+    restartCount: 1
+    started: true
+    state:
+      running:
+        startedAt: "2022-03-20T08:05:33Z"
+  - containerID: cri-o://49ac534c199b2095b0d6d4cb7b42367abc7d624223f3474386e5e9046a9ef17d
+    image: registry.redhat.io/ansible-automation-platform-21/controller-rhel8@sha256:c9b2dc557f43c3cca0812445f37460ce7b27ec9303a6ef90fed856bcdf609a37
+    imageID: registry.redhat.io/ansible-automation-platform-21/controller-rhel8@sha256:11d4e070922a9be78de8cb3234a6a711049ae04bec9d0af73e6e1387854fa151
+    lastState: {}
+    name: example-task
+    ready: true
+    restartCount: 1
+    started: true
+    state:
+      running:
+        startedAt: "2022-03-20T08:05:32Z"
+  - containerID: cri-o://c320f869bca79b3f752f12127ef833b8644b6058a0a91d6ab55ae08295dde1f2
+    image: registry.redhat.io/ansible-automation-platform-21/controller-rhel8@sha256:c9b2dc557f43c3cca0812445f37460ce7b27ec9303a6ef90fed856bcdf609a37
+    imageID: registry.redhat.io/ansible-automation-platform-21/controller-rhel8@sha256:11d4e070922a9be78de8cb3234a6a711049ae04bec9d0af73e6e1387854fa151
+    lastState: {}
+    name: example-web
+    ready: true
+    restartCount: 1
+    started: true
+    state:
+      running:
+        startedAt: "2022-03-20T08:05:29Z"
+  - containerID: cri-o://6b5301a9f9a832fad9562586ac061b4058c82dcb0f8d3b8c94d00e5423184f16
+    image: registry.redhat.io/rhel8/redis-5@sha256:b711e9f796376353db77a337befb39c31e844caaa2ab46985c9e5ad0b5e92996
+    imageID: registry.redhat.io/rhel8/redis-5@sha256:80568ef45d65e3b5aca8de7d874c9d31b09c9e999613cc7267752aeb94538266
+    lastState: {}
+    name: redis
+    ready: true
+    restartCount: 1
+    started: true
+    state:
+      running:
+        startedAt: "2022-03-20T08:05:27Z"
+  hostIP: 192.168.126.11
+  phase: Running
+  podIP: 10.217.0.41
+  podIPs:
+  - ip: 10.217.0.41
+  qosClass: Burstable
+  startTime: "2022-03-19T17:52:59Z"

@@ -1,0 +1,297 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    kubectl.kubernetes.io/last-applied-configuration: '{"apiVersion":"apps/v1","kind":"Deployment","metadata":{"labels":{"app.kubernetes.io/component":"automationcontroller","app.kubernetes.io/managed-by":"automationcontroller-operator","app.kubernetes.io/name":"example","app.kubernetes.io/operator-version":"","app.kubernetes.io/part-of":"example","app.kubernetes.io/version":"latest"},"name":"example","namespace":"ansible-automation-platform"},"spec":{"replicas":1,"selector":{"matchLabels":{"app.kubernetes.io/component":"automationcontroller","app.kubernetes.io/managed-by":"automationcontroller-operator","app.kubernetes.io/name":"example"}},"template":{"metadata":{"labels":{"app.kubernetes.io/component":"automationcontroller","app.kubernetes.io/managed-by":"automationcontroller-operator","app.kubernetes.io/name":"example","app.kubernetes.io/part-of":"example","app.kubernetes.io/version":"latest"}},"spec":{"containers":[{"args":["redis-server","/etc/redis.conf"],"image":"registry.redhat.io/rhel8/redis-5@sha256:b711e9f796376353db77a337befb39c31e844caaa2ab46985c9e5ad0b5e92996","imagePullPolicy":"IfNotPresent","name":"redis","volumeMounts":[{"mountPath":"/etc/redis.conf","name":"example-redis-config","readOnly":true,"subPath":"redis.conf"},{"mountPath":"/var/run/redis","name":"example-redis-socket"},{"mountPath":"/data","name":"example-redis-data"}]},{"env":[{"name":"MY_POD_NAMESPACE","valueFrom":{"fieldRef":{"fieldPath":"metadata.namespace"}}}],"image":"registry.redhat.io/ansible-automation-platform-21/controller-rhel8@sha256:c9b2dc557f43c3cca0812445f37460ce7b27ec9303a6ef90fed856bcdf609a37","imagePullPolicy":"IfNotPresent","name":"example-web","ports":[{"containerPort":8052}],"resources":{"requests":{"cpu":"1000m","memory":"2Gi"}},"volumeMounts":[{"mountPath":"/etc/tower/conf.d/execution_environments.py","name":"example-application-credentials","readOnly":true,"subPath":"execution_environments.py"},{"mountPath":"/etc/tower/conf.d/credentials.py","name":"example-application-credentials","readOnly":true,"subPath":"credentials.py"},{"mountPath":"/etc/tower/conf.d/ldap.py","name":"example-application-credentials","readOnly":true,"subPath":"ldap.py"},{"mountPath":"/etc/tower/SECRET_KEY","name":"example-secret-key","readOnly":true,"subPath":"SECRET_KEY"},{"mountPath":"/etc/tower/settings.py","name":"example-settings","readOnly":true,"subPath":"settings.py"},{"mountPath":"/etc/nginx/nginx.conf","name":"example-nginx-conf","readOnly":true,"subPath":"nginx.conf"},{"mountPath":"/var/run/redis","name":"example-redis-socket"},{"mountPath":"/var/run/supervisor","name":"supervisor-socket"},{"mountPath":"/var/run/awx-rsyslog","name":"rsyslog-socket"},{"mountPath":"/var/lib/awx/rsyslog","name":"rsyslog-dir"},{"mountPath":"/var/lib/awx/projects","name":"example-projects"}]},{"args":["/usr/bin/launch_awx_task.sh"],"env":[{"name":"SUPERVISOR_WEB_CONFIG_PATH","value":"/etc/supervisord.conf"},{"name":"AWX_SKIP_MIGRATIONS","value":"1"},{"name":"MY_POD_UID","valueFrom":{"fieldRef":{"fieldPath":"metadata.uid"}}},{"name":"MY_POD_IP","valueFrom":{"fieldRef":{"fieldPath":"status.podIP"}}},{"name":"MY_POD_NAMESPACE","valueFrom":{"fieldRef":{"fieldPath":"metadata.namespace"}}}],"image":"registry.redhat.io/ansible-automation-platform-21/controller-rhel8@sha256:c9b2dc557f43c3cca0812445f37460ce7b27ec9303a6ef90fed856bcdf609a37","imagePullPolicy":"IfNotPresent","name":"example-task","resources":{"requests":{"cpu":"500m","memory":"1Gi"}},"volumeMounts":[{"mountPath":"/etc/tower/conf.d/execution_environments.py","name":"example-application-credentials","readOnly":true,"subPath":"execution_environments.py"},{"mountPath":"/etc/tower/conf.d/credentials.py","name":"example-application-credentials","readOnly":true,"subPath":"credentials.py"},{"mountPath":"/etc/tower/conf.d/ldap.py","name":"example-application-credentials","readOnly":true,"subPath":"ldap.py"},{"mountPath":"/etc/tower/SECRET_KEY","name":"example-secret-key","readOnly":true,"subPath":"SECRET_KEY"},{"mountPath":"/etc/tower/settings.py","name":"example-settings","readOnly":true,"subPath":"settings.py"},{"mountPath":"/var/run/redis","name":"example-redis-socket"},{"mountPath":"/var/run/supervisor","name":"supervisor-socket"},{"mountPath":"/var/run/awx-rsyslog","name":"rsyslog-socket"},{"mountPath":"/var/lib/awx/rsyslog","name":"rsyslog-dir"},{"mountPath":"/etc/receptor/receptor.conf","name":"example-receptor-config","readOnly":true,"subPath":"receptor.conf"},{"mountPath":"/var/run/receptor","name":"receptor-socket"},{"mountPath":"/var/lib/awx/projects","name":"example-projects"}]},{"args":["receptor","--config","/etc/receptor/receptor.conf"],"env":null,"image":"registry.redhat.io/ansible-automation-platform-21/ee-supported-rhel8@sha256:76d5a0345c9b7e602b8e8f5d06fd95682c79c1b0e7fdf3850f695bdc0a14c547","imagePullPolicy":"IfNotPresent","name":"example-ee","resources":{"requests":{"cpu":"500m","memory":"1Gi"}},"volumeMounts":[{"mountPath":"/etc/receptor/receptor.conf","name":"example-receptor-config","readOnly":true,"subPath":"receptor.conf"},{"mountPath":"/var/run/receptor","name":"receptor-socket"},{"mountPath":"/var/lib/awx/projects","name":"example-projects"}]}],"initContainers":null,"serviceAccountName":"example","volumes":[{"name":"example-application-credentials","secret":{"items":[{"key":"credentials.py","path":"credentials.py"},{"key":"ldap.py","path":"ldap.py"},{"key":"execution_environments.py","path":"execution_environments.py"}],"secretName":"example-app-credentials"}},{"name":"example-secret-key","secret":{"items":[{"key":"secret_key","path":"SECRET_KEY"}],"secretName":"example-secret-key"}},{"configMap":{"items":[{"key":"settings","path":"settings.py"}],"name":"example-automationcontroller-configmap"},"name":"example-settings"},{"configMap":{"items":[{"key":"nginx_conf","path":"nginx.conf"}],"name":"example-automationcontroller-configmap"},"name":"example-nginx-conf"},{"configMap":{"items":[{"key":"redis_conf","path":"redis.conf"}],"name":"example-automationcontroller-configmap"},"name":"example-redis-config"},{"emptyDir":{},"name":"example-redis-socket"},{"emptyDir":{},"name":"example-redis-data"},{"emptyDir":{},"name":"supervisor-socket"},{"emptyDir":{},"name":"rsyslog-socket"},{"emptyDir":{},"name":"receptor-socket"},{"emptyDir":{},"name":"rsyslog-dir"},{"configMap":{"items":[{"key":"receptor_conf","path":"receptor.conf"}],"name":"example-automationcontroller-configmap"},"name":"example-receptor-config"},{"emptyDir":{},"name":"example-projects"}]}}}}'
+  creationTimestamp: "2022-03-19T17:52:59Z"
+  generation: 1
+  labels:
+    app.kubernetes.io/component: automationcontroller
+    app.kubernetes.io/managed-by: automationcontroller-operator
+    app.kubernetes.io/name: example
+    app.kubernetes.io/operator-version: ""
+    app.kubernetes.io/part-of: example
+    app.kubernetes.io/version: latest
+  name: example
+  namespace: ansible-automation-platform
+  ownerReferences:
+  - apiVersion: automationcontroller.ansible.com/v1beta1
+    kind: AutomationController
+    name: example
+    uid: 101e9ce3-4437-4cc0-af0e-dff1b5b865ab
+  resourceVersion: "67342"
+  uid: d9ca1ae0-b574-409a-9bba-a9af4982283d
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: automationcontroller
+      app.kubernetes.io/managed-by: automationcontroller-operator
+      app.kubernetes.io/name: example
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/component: automationcontroller
+        app.kubernetes.io/managed-by: automationcontroller-operator
+        app.kubernetes.io/name: example
+        app.kubernetes.io/part-of: example
+        app.kubernetes.io/version: latest
+    spec:
+      containers:
+      - args:
+        - redis-server
+        - /etc/redis.conf
+        image: registry.redhat.io/rhel8/redis-5@sha256:b711e9f796376353db77a337befb39c31e844caaa2ab46985c9e5ad0b5e92996
+        imagePullPolicy: IfNotPresent
+        name: redis
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/redis.conf
+          name: example-redis-config
+          readOnly: true
+          subPath: redis.conf
+        - mountPath: /var/run/redis
+          name: example-redis-socket
+        - mountPath: /data
+          name: example-redis-data
+      - env:
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        image: registry.redhat.io/ansible-automation-platform-21/controller-rhel8@sha256:c9b2dc557f43c3cca0812445f37460ce7b27ec9303a6ef90fed856bcdf609a37
+        imagePullPolicy: IfNotPresent
+        name: example-web
+        ports:
+        - containerPort: 8052
+          protocol: TCP
+        resources:
+          requests:
+            cpu: "1"
+            memory: 2Gi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/tower/conf.d/execution_environments.py
+          name: example-application-credentials
+          readOnly: true
+          subPath: execution_environments.py
+        - mountPath: /etc/tower/conf.d/credentials.py
+          name: example-application-credentials
+          readOnly: true
+          subPath: credentials.py
+        - mountPath: /etc/tower/conf.d/ldap.py
+          name: example-application-credentials
+          readOnly: true
+          subPath: ldap.py
+        - mountPath: /etc/tower/SECRET_KEY
+          name: example-secret-key
+          readOnly: true
+          subPath: SECRET_KEY
+        - mountPath: /etc/tower/settings.py
+          name: example-settings
+          readOnly: true
+          subPath: settings.py
+        - mountPath: /etc/nginx/nginx.conf
+          name: example-nginx-conf
+          readOnly: true
+          subPath: nginx.conf
+        - mountPath: /var/run/redis
+          name: example-redis-socket
+        - mountPath: /var/run/supervisor
+          name: supervisor-socket
+        - mountPath: /var/run/awx-rsyslog
+          name: rsyslog-socket
+        - mountPath: /var/lib/awx/rsyslog
+          name: rsyslog-dir
+        - mountPath: /var/lib/awx/projects
+          name: example-projects
+      - args:
+        - /usr/bin/launch_awx_task.sh
+        env:
+        - name: SUPERVISOR_WEB_CONFIG_PATH
+          value: /etc/supervisord.conf
+        - name: AWX_SKIP_MIGRATIONS
+          value: "1"
+        - name: MY_POD_UID
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.uid
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        image: registry.redhat.io/ansible-automation-platform-21/controller-rhel8@sha256:c9b2dc557f43c3cca0812445f37460ce7b27ec9303a6ef90fed856bcdf609a37
+        imagePullPolicy: IfNotPresent
+        name: example-task
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/tower/conf.d/execution_environments.py
+          name: example-application-credentials
+          readOnly: true
+          subPath: execution_environments.py
+        - mountPath: /etc/tower/conf.d/credentials.py
+          name: example-application-credentials
+          readOnly: true
+          subPath: credentials.py
+        - mountPath: /etc/tower/conf.d/ldap.py
+          name: example-application-credentials
+          readOnly: true
+          subPath: ldap.py
+        - mountPath: /etc/tower/SECRET_KEY
+          name: example-secret-key
+          readOnly: true
+          subPath: SECRET_KEY
+        - mountPath: /etc/tower/settings.py
+          name: example-settings
+          readOnly: true
+          subPath: settings.py
+        - mountPath: /var/run/redis
+          name: example-redis-socket
+        - mountPath: /var/run/supervisor
+          name: supervisor-socket
+        - mountPath: /var/run/awx-rsyslog
+          name: rsyslog-socket
+        - mountPath: /var/lib/awx/rsyslog
+          name: rsyslog-dir
+        - mountPath: /etc/receptor/receptor.conf
+          name: example-receptor-config
+          readOnly: true
+          subPath: receptor.conf
+        - mountPath: /var/run/receptor
+          name: receptor-socket
+        - mountPath: /var/lib/awx/projects
+          name: example-projects
+      - args:
+        - receptor
+        - --config
+        - /etc/receptor/receptor.conf
+        image: registry.redhat.io/ansible-automation-platform-21/ee-supported-rhel8@sha256:76d5a0345c9b7e602b8e8f5d06fd95682c79c1b0e7fdf3850f695bdc0a14c547
+        imagePullPolicy: IfNotPresent
+        name: example-ee
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/receptor/receptor.conf
+          name: example-receptor-config
+          readOnly: true
+          subPath: receptor.conf
+        - mountPath: /var/run/receptor
+          name: receptor-socket
+        - mountPath: /var/lib/awx/projects
+          name: example-projects
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: example
+      serviceAccountName: example
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: example-application-credentials
+        secret:
+          defaultMode: 420
+          items:
+          - key: credentials.py
+            path: credentials.py
+          - key: ldap.py
+            path: ldap.py
+          - key: execution_environments.py
+            path: execution_environments.py
+          secretName: example-app-credentials
+      - name: example-secret-key
+        secret:
+          defaultMode: 420
+          items:
+          - key: secret_key
+            path: SECRET_KEY
+          secretName: example-secret-key
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: settings
+            path: settings.py
+          name: example-automationcontroller-configmap
+        name: example-settings
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: nginx_conf
+            path: nginx.conf
+          name: example-automationcontroller-configmap
+        name: example-nginx-conf
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: redis_conf
+            path: redis.conf
+          name: example-automationcontroller-configmap
+        name: example-redis-config
+      - emptyDir: {}
+        name: example-redis-socket
+      - emptyDir: {}
+        name: example-redis-data
+      - emptyDir: {}
+        name: supervisor-socket
+      - emptyDir: {}
+        name: rsyslog-socket
+      - emptyDir: {}
+        name: receptor-socket
+      - emptyDir: {}
+        name: rsyslog-dir
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: receptor_conf
+            path: receptor.conf
+          name: example-automationcontroller-configmap
+        name: example-receptor-config
+      - emptyDir: {}
+        name: example-projects
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: "2022-03-19T17:54:28Z"
+    lastUpdateTime: "2022-03-19T17:54:28Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2022-03-19T17:52:59Z"
+    lastUpdateTime: "2022-03-19T17:54:28Z"
+    message: ReplicaSet "example-84dccf4ccc" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 1
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1
